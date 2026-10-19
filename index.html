@@ -276,7 +276,7 @@ body.cosmic10-listening .cosmic10-planet{animation:cosmic10Listen 1.4s ease-in-o
 .footer-note{margin:5px 0 0!important;font-size:10px!important;line-height:1.3!important}
 @media(max-width:390px){.composer{grid-template-columns:35px minmax(0,1fr) 35px 39px!important;gap:5px!important;padding:6px!important}.composer #photoAttach,.composer #voiceMic,.composer #voiceSound{width:35px!important;height:35px!important}.composer .send{width:39px!important;height:39px!important}.composer #prompt{font-size:14px!important}.composer #live91Toggle{font-size:12px!important}}
 </style><style id="nexus-103-design">
-/* SATURN 10.4 — one-line composer with a single portal to Live Voice */
+/* BEYOND REALITY 11.0 — one-line composer with a single portal to Live Voice */
 .composer-wrap{padding:9px 13px max(11px,env(safe-area-inset-bottom))!important;background:linear-gradient(0deg,#010208f5,#010208e8)!important;border-top:1px solid #8cafff13!important;overflow:visible!important}
 .composer{display:grid!important;grid-template-columns:34px minmax(0,1fr) 42px 39px!important;grid-template-rows:minmax(45px,auto)!important;align-items:center!important;gap:5px!important;min-height:56px!important;width:100%!important;max-width:780px!important;padding:5px 7px!important;border-radius:30px!important;background:linear-gradient(125deg,rgba(9,13,27,.94),rgba(13,12,33,.96))!important;border:1px solid #697ab45c!important;box-shadow:inset 0 1px 0 #d7edff0d,0 0 24px #5c56ff13!important;overflow:visible!important}
 .composer #photoInput{display:none!important}
@@ -343,8 +343,48 @@ body.cosmic10-speaking #cosmic10Overlay::before{filter:saturate(1.4) hue-rotate(
 @keyframes orbital105{from{opacity:.18;transform:translate(-50%,-50%) rotate(-23deg) scale(.95)}to{opacity:.65;transform:translate(-50%,-50%) rotate(-19deg) scale(1.06)}}
 @media(prefers-reduced-motion:reduce){#cosmic10Overlay::before,#cosmic10Overlay .cosmic10-middle::after{animation:none!important}}
 </style>
+
+<style id="beyond-reality-110">
+/* Visual-only layer; original Gemini, memory and live voice logic unchanged. */
+:root{--void-violet:#a76bff;--void-blue:#58d7ff}
+body{background:#02020b!important}
+header{background:linear-gradient(180deg,#060615f2,#04040de8)!important;border-bottom:1px solid #7657ba33!important}
+.logo.menu-trigger{background:radial-gradient(circle at 28% 22%,#9feaff,#6159dd 38%,#170b3c 78%)!important;border:1px solid #aa9affaa!important;box-shadow:0 0 18px #6c52ff88!important}
+.drawer{width:min(310px,86vw)!important;background:linear-gradient(175deg,#070519ed,#03030bf7)!important;border-right:1px solid #7650be6b!important}
+.drawer::before{content:''!important;position:fixed!important;inset:0!important;z-index:0!important;opacity:.9!important;background:radial-gradient(ellipse at 14% 10%,#3e2b885c,transparent 45%),radial-gradient(ellipse at 90% 73%,#3d17a26a,transparent 46%),radial-gradient(ellipse at 13% 90%,#06c8e833,transparent 40%)!important;filter:none!important}
+.drawer::after{content:''!important;position:fixed!important;inset:0!important;z-index:0!important;pointer-events:none!important;background-image:radial-gradient(1px 1px at 20% 20%,#c8c7ff 95%,transparent),radial-gradient(2px 2px at 72% 42%,#d2a8ff 95%,transparent),radial-gradient(1px 1px at 48% 85%,#91e8ff 95%,transparent)!important;background-size:91px 131px,161px 173px,113px 127px!important;animation:voidStars 9s ease-in-out infinite alternate!important}
+.drawer .drawer-item{min-height:43px!important;padding:9px 12px!important;margin:3px 0!important;font-size:14px!important;border-radius:13px!important;background:linear-gradient(100deg,#0b0b22c9,#090a19bd)!important;border:1px solid #7c5aca37!important;box-shadow:inset 0 1px #ffffff09!important}
+.drawer .drawer-item .nav-emoji{font-size:19px!important;width:29px!important;margin-right:7px!important}
+.drawer .drawer-top{margin-bottom:12px!important}.drawer .drawer-panel{font-size:13px!important;padding:10px!important}
+.drawer .drawer-divider{margin:8px 4px!important}.drawer .drawer-bottom{padding-top:9px!important}
+.composer-wrap{background:linear-gradient(0deg,#01020bea,#02030ce6)!important;border-top:1px solid #735bb62b!important;padding-bottom:max(9px,env(safe-area-inset-bottom))!important}
+.composer{min-height:56px!important;padding:6px 8px!important;border:1px solid #7662bc70!important;background:#080b1cf5!important;box-shadow:0 0 18px #6c4edc24!important;border-radius:30px!important}
+.composer textarea{font-size:15px!important;min-height:38px!important}
+.composer #live91Toggle{display:grid!important;place-items:center!important;width:42px!important;height:42px!important;flex:0 0 42px!important;border-radius:50%!important;border:1px solid #ad9aff!important;background:radial-gradient(circle at 31% 25%,#ddffff 0%,#72c9ff 12%,#7253ed 36%,#321171 65%,#0b0925 90%)!important;box-shadow:0 0 14px #9a54ff91,inset -5px -6px 12px #07051acc!important;color:transparent!important;font-size:0!important;animation:voidOrb 4s ease-in-out infinite!important}
+.composer #live91Toggle::after{content:'';width:29px;height:12px;border:2px solid #e1c3ffad;border-radius:50%;transform:rotate(-25deg);box-shadow:0 0 7px #9f8aff}
+.composer .send{height:40px!important;width:40px!important;border-radius:50%!important;font-size:21px!important}
+/* Immersive portal: the artwork remains behind interactive controls. */
+#cosmic10Overlay{background:#010109!important;isolation:isolate!important}
+#cosmic10Overlay::after{background:linear-gradient(90deg,#000c,transparent 26%,transparent 74%,#000c),linear-gradient(0deg,#000c,transparent 23%,transparent 83%,#0008)!important}
+#cosmic10Overlay .cosmic10-middle{z-index:2!important}
+#cosmic10Overlay .cosmic10-planet-wrap{width:min(96vw,520px)!important;height:min(96vw,520px)!important;overflow:visible!important;filter:drop-shadow(0 0 27px #bd89ff5c)!important}
+#cosmic10Overlay .cosmic10-planet{background:repeating-linear-gradient(173deg,transparent 0 9px,#d5a87924 10px 15px,transparent 16px 27px),radial-gradient(circle at 30% 23%,#fff2cf 0%,#e4c69f 17%,#bc916c 39%,#805f5d 64%,#28203b 85%,#0c0b22 100%)!important;box-shadow:inset -29px -20px 33px #03020bbd,inset 8px 9px 23px #ffedd96c,0 0 35px #c497ff52!important}
+#cosmic10Overlay .cosmic10-planet::before{animation:cloudDrift 18s linear infinite!important;opacity:.8!important}
+#cosmic10Overlay .saturn-ring{opacity:.6!important;filter:drop-shadow(0 0 13px #d5b0ff7d)!important;animation:ringShimmer 14s linear infinite!important;background-size:150% 100%!important}
+#cosmic10Overlay .cosmic10-top strong{color:#d5c7ff!important}
+#cosmic10Overlay .cosmic10-status{color:#ebddff!important;text-shadow:0 0 15px #aa6aff9a}
+#cosmic10Overlay .cosmic10-controls #cosmic10End{background:#180e2ad9!important;border-color:#9d71df99!important}
+#ringParticlesBack,#ringParticlesFront{position:absolute;inset:-12%;width:124%;height:124%;pointer-events:none}
+#ringParticlesBack{z-index:1}#ringParticlesFront{z-index:4}
+#cosmic10Overlay .cosmic10-planet-wrap{isolation:isolate!important}
+@keyframes voidStars{from{opacity:.4}to{opacity:.95}}@keyframes voidOrb{50%{box-shadow:0 0 28px #9b63ffbb,inset -5px -6px 12px #07051acc;transform:scale(1.04)}}
+@keyframes cloudDrift{from{background-position:0 0}to{background-position:160px 0}}
+@keyframes ringShimmer{from{background-position:0 0}to{background-position:150% 0}}
+@media(max-width:600px){.controls{padding-top:6px!important}.drawer .drawer-item{font-size:14px!important}.composer textarea{font-size:14px!important}}
+@media(prefers-reduced-motion:reduce){#cosmic10Overlay .saturn-ring,.composer #live91Toggle,.drawer::after{animation:none!important}}
+</style>
 </head>
-<body><canvas id="cosmicFX7" aria-hidden="true"></canvas><div id="sceneFX7" aria-hidden="true"></div><canvas id="livingCosmos" aria-hidden="true"></canvas><div id="drawerOverlay" class="drawer-overlay" hidden></div><aside id="drawer" class="drawer" aria-label="Главное меню" aria-hidden="true"><canvas id="drawerCosmos" aria-hidden="true"></canvas><div class="galaxy84-art" aria-hidden="true"></div><div class="drawer-top"><div class="drawer-heading"><span class="drawer-mark">✦</span><div><strong>KUTSENKO AI</strong><small>SATURN 10.4</small></div></div><button id="closeDrawer" class="drawer-close" aria-label="Закрыть меню">✕</button></div><button class="drawer-item primary" id="sideNew"><span class="nav-emoji" aria-hidden="true">✚</span>Новый чат</button><button class="drawer-item" id="sideSearch"><span class="nav-emoji" aria-hidden="true">🔎</span>Поиск по чатам</button><button class="drawer-item" id="sideGalaxy"><span class="nav-emoji" aria-hidden="true">🌌</span>Моя галактика</button><button class="drawer-item" id="sideProjects"><span class="nav-emoji" aria-hidden="true">🛠️</span>Проекты</button><button class="drawer-item" id="sidePlugins"><span class="nav-emoji" aria-hidden="true">🧩</span>Плагины</button><button class="drawer-item" id="sideSchedule"><span class="nav-emoji" aria-hidden="true">📅</span>Запланировано</button><button class="drawer-item" id="sideHistory"><span class="nav-emoji" aria-hidden="true">📜</span>История чатов</button><button class="drawer-item" id="sideSettings"><span class="nav-emoji" aria-hidden="true">⚙️</span>Настройки</button><div class="drawer-divider"></div><div id="drawerPanel" class="drawer-panel" aria-live="polite"><p>Выбери раздел меню.</p></div><div class="drawer-bottom"><button class="drawer-item" id="sideAbout"><span class="nav-emoji" aria-hidden="true">ℹ️</span>О KUTSENKO AI</button><small>Created by Anton Kutsenko</small></div></aside><section id="cosmic10Overlay" role="dialog" aria-modal="true" aria-label="Живой голосовой разговор"><div class="cosmic10-top"><strong>✦ KUTSENKO AI · LIVE</strong><button type="button" id="cosmic10Close" aria-label="Закрыть голосовой разговор">✕</button></div><div class="cosmic10-middle"><div class="cosmic10-planet-wrap" aria-hidden="true"><div class="saturn-ring saturn-ring-back"></div><div class="cosmic10-planet"></div><div class="saturn-ring saturn-ring-front"></div></div><div><div class="cosmic10-status" id="cosmic10Status">Подключаем голос…</div><div class="cosmic10-hint">Говори свободно. Я слушаю тебя.</div></div></div><div class="cosmic10-voice"><label for="cosmic10VoiceSelect">Голос</label><select id="cosmic10VoiceSelect" aria-label="Выбрать голос"><option value="">Автоматически</option></select><button type="button" id="cosmic101Test" class="cosmic101-test">▶ Проверить</button></div><div class="cosmic10-controls"><button type="button" id="cosmic10Mute" aria-pressed="false" aria-label="Отключить микрофон">🎙️</button><button type="button" id="cosmic10End">⏹ Завершить</button></div></section><div class="app"><header><div class="brand"><button class="logo menu-trigger" id="menuTrigger" type="button" aria-label="Открыть меню" aria-expanded="false">✦</button><div><h1>KUTSENKO <span style="color:#49e3ff">AI</span></h1><div class="sub"><span class="online"></span>SATURN 10.4 · AI ASSISTANT</div></div></div><button class="ghost" id="export" title="Скачать историю чатов">⇩ Экспорт</button></header>
+<body><canvas id="cosmicFX7" aria-hidden="true"></canvas><div id="sceneFX7" aria-hidden="true"></div><canvas id="livingCosmos" aria-hidden="true"></canvas><div id="drawerOverlay" class="drawer-overlay" hidden></div><aside id="drawer" class="drawer" aria-label="Главное меню" aria-hidden="true"><canvas id="drawerCosmos" aria-hidden="true"></canvas><div class="galaxy84-art" aria-hidden="true"></div><div class="drawer-top"><div class="drawer-heading"><span class="drawer-mark">✦</span><div><strong>KUTSENKO AI</strong><small>BEYOND REALITY 11.0</small></div></div><button id="closeDrawer" class="drawer-close" aria-label="Закрыть меню">✕</button></div><button class="drawer-item primary" id="sideNew"><span class="nav-emoji" aria-hidden="true">✚</span>Новый чат</button><button class="drawer-item" id="sideSearch"><span class="nav-emoji" aria-hidden="true">🔎</span>Поиск по чатам</button><button class="drawer-item" id="sideGalaxy"><span class="nav-emoji" aria-hidden="true">🌌</span>Моя галактика</button><button class="drawer-item" id="sideProjects"><span class="nav-emoji" aria-hidden="true">🛠️</span>Проекты</button><button class="drawer-item" id="sidePlugins"><span class="nav-emoji" aria-hidden="true">🧩</span>Плагины</button><button class="drawer-item" id="sideSchedule"><span class="nav-emoji" aria-hidden="true">📅</span>Запланировано</button><button class="drawer-item" id="sideHistory"><span class="nav-emoji" aria-hidden="true">📜</span>История чатов</button><button class="drawer-item" id="sideSettings"><span class="nav-emoji" aria-hidden="true">⚙️</span>Настройки</button><div class="drawer-divider"></div><div id="drawerPanel" class="drawer-panel" aria-live="polite"><p>Выбери раздел меню.</p></div><div class="drawer-bottom"><button class="drawer-item" id="sideAbout"><span class="nav-emoji" aria-hidden="true">ℹ️</span>О KUTSENKO AI</button><small>Created by Anton Kutsenko</small></div></aside><section id="cosmic10Overlay" role="dialog" aria-modal="true" aria-label="Живой голосовой разговор"><div class="cosmic10-top"><strong>✦ KUTSENKO AI · LIVE</strong><button type="button" id="cosmic10Close" aria-label="Закрыть голосовой разговор">✕</button></div><div class="cosmic10-middle"><div class="cosmic10-planet-wrap" aria-hidden="true"><div class="saturn-ring saturn-ring-back"></div><div class="cosmic10-planet"></div><div class="saturn-ring saturn-ring-front"></div></div><div><div class="cosmic10-status" id="cosmic10Status">Подключаем голос…</div><div class="cosmic10-hint">Говори свободно. Я слушаю тебя.</div></div></div><div class="cosmic10-voice"><label for="cosmic10VoiceSelect">Голос</label><select id="cosmic10VoiceSelect" aria-label="Выбрать голос"><option value="">Автоматически</option></select><button type="button" id="cosmic101Test" class="cosmic101-test">▶ Проверить</button></div><div class="cosmic10-controls"><button type="button" id="cosmic10Mute" aria-pressed="false" aria-label="Отключить микрофон">🎙️</button><button type="button" id="cosmic10End">⏹ Завершить</button></div></section><div class="app"><header><div class="brand"><button class="logo menu-trigger" id="menuTrigger" type="button" aria-label="Открыть меню" aria-expanded="false">✦</button><div><h1>KUTSENKO <span style="color:#49e3ff">AI</span></h1><div class="sub"><span class="online"></span>BEYOND REALITY 11.0 · AI ASSISTANT</div></div></div><button class="ghost" id="export" title="Скачать историю чатов">⇩ Экспорт</button></header>
 <div class="controls"><select id="mode" aria-label="Режим"><option value="chat">✦ Общение</option><option value="math">∑ Математика</option><option value="science">⚛ Наука</option><option value="code">⌘ Код</option><option value="writing">✎ Тексты</option></select><button id="new">＋ Новый чат</button><button id="remove" class="ghost" title="Удалить чат">♲</button></div><nav class="chats" id="tabs" aria-label="История чатов"></nav><div class="note" id="status">KUTSENKO AI · Gemini через Cloudflare</div><main class="messages" id="messages"></main><div class="composer-wrap"><div class="photo-preview" id="photoPreview"><img id="photoThumb" alt="Выбранная фотография"><span id="photoName"></span><button type="button" id="photoClear" aria-label="Удалить фотографию">✕</button></div><form class="composer" id="form"><input type="file" id="photoInput" accept="image/jpeg,image/png,image/webp" hidden><button type="button" class="attach-btn" id="photoAttach" title="Прикрепить фотографию" aria-label="Прикрепить фотографию">＋</button><textarea id="prompt" placeholder="Спроси KUTSENKO AI о чём угодно…" rows="1" required aria-label="Сообщение"></textarea><button type="button" class="voice-btn" id="voiceMic" aria-label="Говорить голосом" title="Голосовой ввод">🎙️</button><button type="button" class="voice-btn voice-sound" id="voiceSound" aria-label="Включить или выключить озвучивание" title="Озвучивание ответов">🔊</button><button type="button" class="live91-btn" id="live91Toggle" aria-label="Открыть голосовой портал" aria-pressed="false" title="Живой разговор">📞</button><button class="send" type="submit" aria-label="Отправить">➤</button></form><div class="footer-note">KUTSENKO AI может ошибаться. Проверяйте важную информацию.</div></div></div>
 <script>
 const KEY='kutsenko_mobile_v1';let data;try{data=JSON.parse(localStorage.getItem(KEY))}catch(e){}if(!data||!Array.isArray(data.chats)||!data.chats.length)data={active:0,chats:[{title:'Первый чат',messages:[{role:'assistant',text:'Привет! Я KUTSENKO AI. Задай мне вопрос — я постараюсь помочь.'}]}]};const $=id=>document.getElementById(id);const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){console.warn('Хранилище переполнено: история фото не сохранена',e)}};const current=()=>data.chats[data.active];function escapeHTML(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
@@ -921,4 +961,47 @@ resize();start();
  window.addEventListener('pagehide',()=>{if(active)halt()});
  paint();
 })();
-</script></body></html>
+</script>
+<script id="beyond-reality-rings">
+(()=>{
+ const portal=document.getElementById('cosmic10Overlay');
+ const wrap=portal?.querySelector('.cosmic10-planet-wrap');
+ if(!wrap)return;
+ const canvases=['ringParticlesBack','ringParticlesFront'].map(id=>{const c=document.createElement('canvas');c.id=id;c.setAttribute('aria-hidden','true');wrap.appendChild(c);return c});
+ let running=false,frame=0;
+ const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+ function render(time){
+  if(!portal.classList.contains('visible') && getComputedStyle(portal).display==='none'){running=false;return}
+  const width=wrap.clientWidth*1.24,height=wrap.clientHeight*1.24;
+  const dpr=Math.min(devicePixelRatio||1,1.5);
+  canvases.forEach((canvas,side)=>{
+   const w=Math.round(width*dpr),h=Math.round(height*dpr);
+   if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h}
+   const ctx=canvas.getContext('2d');if(!ctx)return;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,width,height);
+   const cx=width/2,cy=height/2, tilt=-.39,ct=Math.cos(tilt),st=Math.sin(tilt);
+   const tick=(reduced?0:time*.00015);
+   for(let layer=0;layer<7;layer++){
+    const rx=width*(.36+layer*.019),ry=height*(.10+layer*.006);
+    const count=90;
+    for(let i=0;i<count;i++){
+     const angle=i/count*Math.PI*2+tick*(1.1-layer*.07);
+     const x=rx*Math.cos(angle),y=ry*Math.sin(angle);
+     const yy=x*st+y*ct;
+     if((yy>=0?1:0)!==side)continue;
+     const xx=x*ct-y*st;
+     const a=.15+.55*(.5+.5*Math.sin(angle*7+layer));
+     ctx.beginPath();ctx.fillStyle=`rgba(${layer%3===0?'246,211,166':layer%3===1?'192,148,255':'142,202,255'},${a})`;
+     ctx.shadowBlur=layer%3===0?5:9;ctx.shadowColor=layer%3===0?'#ffd3a0':'#a784ff';
+     ctx.arc(cx+xx,cy+yy,layer%2===0?.75:1.15,0,Math.PI*2);ctx.fill();
+    }
+   }
+   ctx.shadowBlur=0;
+  });
+  frame=requestAnimationFrame(render);
+ }
+ const observer=new MutationObserver(()=>{const visible=getComputedStyle(portal).display!=='none';if(visible&&!running){running=true;frame=requestAnimationFrame(render)}else if(!visible&&running){cancelAnimationFrame(frame);running=false}});
+ observer.observe(portal,{attributes:true,attributeFilter:['class','style']});
+ document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(frame);running=false}else if(getComputedStyle(portal).display!=='none'&&!running){running=true;frame=requestAnimationFrame(render)}});
+})();
+</script>
+</body></html>
