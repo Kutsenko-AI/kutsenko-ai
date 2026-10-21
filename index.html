@@ -382,7 +382,7 @@ async function requestAnswer(chat){
  const reply={role:'assistant',text:'Думаю…'};chat.messages.push(reply);
  sending=true;$('form').querySelector('button[type="submit"]').disabled=true;render();
  try{
-  const messages=chat.messages.filter(m=>m!==reply).filter(m=>m.role==='user'||m.role==='assistant').slice(-10).map(m=>({role:m.role==='assistant'?'model':'user',text:m.documentText?'[Прикреплённый документ: '+m.documentName+']\n'+m.documentText+'\n\nВопрос пользователя: '+m.text:m.text,...(m.imageData && m===chat.messages.filter(x=>x!==reply).at(-1)?{imageData:m.imageData}: {})}));
+  const messages=chat.messages.filter(m=>m!==reply).filter(m=>m.role==='user'||m.role==='assistant').slice(-6).map(m=>({role:m.role==='assistant'?'model':'user',text:m.documentText?'[Прикреплённый документ: '+m.documentName+']\n'+m.documentText+'\n\nВопрос пользователя: '+m.text:m.text,...(m.imageData && m===chat.messages.filter(x=>x!==reply).at(-1)?{imageData:m.imageData}: {})}));
   const lang=localStorage.getItem('kutsenko_ai_answer_lang')||'auto';
   if(lang!=='auto'){
     const names={ru:'Russian',en:'English',kk:'Kazakh',es:'Spanish',de:'German',fr:'French',pt:'Portuguese',ar:'Arabic',zh:'Simplified Chinese',ja:'Japanese',ko:'Korean',hi:'Hindi',tr:'Turkish'};
@@ -906,7 +906,7 @@ resize();start();
  const NativeRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
  if(!toggle||!form||!messages)return;
  const status=document.createElement('div');status.id='live91Status';status.setAttribute('role','status');document.body.appendChild(status);
- let active=false, rec=null, phase='off', waiting=false, voice=null, retryTimer=null, generation=0, muted=false;
+ let active=false, rec=null, phase='off', waiting=false, voice=null, retryTimer=null, generation=0, muted=false, replyBaseline=0;
  const voiceSelect=document.getElementById('cosmic10VoiceSelect');
  function loadVoices(){const all=window.speechSynthesis?.getVoices()||[];const old=voiceSelect.value||localStorage.getItem('kutsenko_cosmic10_voice')||'';const matches=all.filter(v=>v.lang.toLowerCase().startsWith(lang().slice(0,2).toLowerCase()));const male=/male|муж|pavel|павел|dmitry|дмитрий|alexander|александр|yuri|юрий|maxim|максим|nikolai|николай|george|григорий|ivan|иван|artem|артём|aleksandr/i;matches.sort((a,b)=>Number(male.test(b.name))-Number(male.test(a.name)));voiceSelect.replaceChildren(new Option('Автоматически — мужской, если доступен',''));for(const v of matches)voiceSelect.add(new Option((male.test(v.name)?'♂ ':'')+v.name+' · '+v.lang,v.voiceURI));voiceSelect.value=old;if(voiceSelect.selectedIndex<0)voiceSelect.value=''}
  voiceSelect.addEventListener('change',()=>localStorage.setItem('kutsenko_cosmic10_voice',voiceSelect.value));
@@ -925,17 +925,17 @@ resize();start();
   if(!active||waiting||phase==='speaking'||muted)return;
   if(!NativeRecognition){label('Распознавание речи недоступно в этом браузере');halt();return}
   const g=generation;
-  rec=new NativeRecognition();rec.lang=lang();rec.continuous=false;rec.interimResults=false;rec.maxAlternatives=1;phase='listening';label('🎙️ Слушаю…');
-  rec.onresult=e=>{if(!active||g!==generation||waiting)return;const t=Array.from(e.results).map(r=>r[0]?.transcript||'').join(' ').trim();if(!t)return;waiting=true;phase='waiting';label('🧠 Думаю над ответом…');input.value=t;input.dispatchEvent(new Event('input',{bubbles:true}));try{rec?.stop()}catch(err){};if(form.requestSubmit)form.requestSubmit();else form.querySelector('button[type=submit]').click()};
+  rec=new NativeRecognition();rec.lang=lang();rec.continuous=false;rec.interimResults=true;rec.maxAlternatives=1;phase='listening';label('🎙️ Слушаю…');
+  rec.onresult=e=>{if(!active||g!==generation||waiting)return;const finals=Array.from(e.results).filter(r=>r.isFinal);if(!finals.length){label('🎙️ Слышу тебя…');return}const t=finals.map(r=>r[0]?.transcript||'').join(' ').trim();if(!t)return;waiting=true;replyBaseline=messages.querySelectorAll('.msg.assistant').length;phase='waiting';label('🧠 Думаю над ответом…');input.value=t;input.dispatchEvent(new Event('input',{bubbles:true}));try{rec?.stop()}catch(err){};if(form.requestSubmit)form.requestSubmit();else form.querySelector('button[type=submit]').click()};
   rec.onerror=e=>{if(!active||g!==generation)return;if(e.error==='not-allowed'||e.error==='service-not-allowed'){label('Нет доступа к микрофону');halt()}else if(e.error==='no-speech'){phase='idle'}else if(e.error==='network'){label('Сеть распознавания недоступна. Нажми 📞 снова');halt()}else{phase='idle'}};
-  rec.onend=()=>{if(!active||g!==generation||waiting||phase==='speaking')return;phase='idle';clearTimeout(retryTimer);retryTimer=setTimeout(()=>{if(active&&!waiting&&g===generation)listen()},650)};
+  rec.onend=()=>{if(!active||g!==generation||waiting||phase==='speaking')return;phase='idle';clearTimeout(retryTimer);retryTimer=setTimeout(()=>{if(active&&!waiting&&g===generation)listen()},220)};
   try{rec.start()}catch(e){label('Не удалось запустить микрофон. Нажми 📞 снова');halt()}
  }
  function say(t){if(!active)return;const g=generation;phase='speaking';label('🔊 KUTSENKO AI говорит…');
   if(!('speechSynthesis' in window)){phase='idle';listen();return}
   try{window.speechSynthesis.cancel()}catch(e){}
-  const u=new SpeechSynthesisUtterance(String(t).replace(/```[\s\S]*?```/g,' фрагмент кода ').replace(/[*#`_>]/g,'').slice(0,3000));u.lang=lang();u.rate=.92;const selected=voiceSelect.value;const voices=window.speechSynthesis.getVoices();const available=voices.filter(v=>v.lang.toLowerCase().startsWith(lang().slice(0,2).toLowerCase()));const preferred=voices.find(v=>v.voiceURI===selected)||(available.find(v=>/male|муж|pavel|павел|dmitry|дмитрий|alexander|александр|yuri|юрий|maxim|максим|nikolai|николай|ivan|иван|artem|артём/i.test(v.name)))||(available.find(v=>/google|natural|neural|premium|enhanced/i.test(v.name)))||available[0];if(preferred)u.voice=preferred;u.rate=.98;u.pitch=.9;voice=u;
-  const done=()=>{if(!active||g!==generation||voice!==u)return;voice=null;phase='idle';label('🎙️ Твоя очередь…');setTimeout(()=>{if(active&&g===generation)listen()},400)};
+  const u=new SpeechSynthesisUtterance(String(t).replace(/```[\s\S]*?```/g,' фрагмент кода ').replace(/[*#`_>]/g,'').replace(/https?:\/\/\S+/g,' ссылка ').slice(0,900));u.lang=lang();u.rate=.92;const selected=voiceSelect.value;const voices=window.speechSynthesis.getVoices();const available=voices.filter(v=>v.lang.toLowerCase().startsWith(lang().slice(0,2).toLowerCase()));const preferred=voices.find(v=>v.voiceURI===selected)||(available.find(v=>/male|муж|pavel|павел|dmitry|дмитрий|alexander|александр|yuri|юрий|maxim|максим|nikolai|николай|ivan|иван|artem|артём/i.test(v.name)))||(available.find(v=>/google|natural|neural|premium|enhanced/i.test(v.name)))||available[0];if(preferred)u.voice=preferred;u.rate=1.12;u.pitch=.9;voice=u;
+  const done=()=>{if(!active||g!==generation||voice!==u)return;voice=null;phase='idle';label('🎙️ Твоя очередь…');setTimeout(()=>{if(active&&g===generation)listen()},300)};
   u.onend=done;u.onerror=done;
   try{window.speechSynthesis.speak(u)}catch(e){done()}
  }
@@ -944,7 +944,7 @@ resize();start();
  document.getElementById('voiceMic')?.addEventListener('click',()=>{if(active)halt()},true);
  const obs=new MutationObserver(()=>{
   if(!active||!waiting)return;
-  const all=messages.querySelectorAll('.msg.assistant');const last=all[all.length-1];if(!last)return;
+  const all=messages.querySelectorAll('.msg.assistant');if(all.length<=replyBaseline)return;const last=all[all.length-1];if(!last)return;
   const text=(last.innerText||last.textContent||'').replace(/📋 Копировать[\s\S]*$/,'').trim();
   if(!text||text==='Думаю…'||text.includes('Готовлю ответ…'))return;
   waiting=false;say(text);
