@@ -381,7 +381,7 @@ $('form').onsubmit=async e=>{
 };
 window.kutsenkoGeneratedImages=new Map();
 const KUTSENKO_IMAGE_URL=API_URL.replace(/\/chat$/, '/image');
-function isKutsenkoImageRequest(t){return /^(?:пожалуйста[,\s]*)?(?:нарисуй|нарисовать|создай\s+(?:картинку|изображение|фото|рисунок)|сгенерируй\s+(?:картинку|изображение|фото|рисунок)|сделай\s+(?:картинку|изображение|рисунок)|generate\s+(?:an?\s+)?image|draw\s+(?:an?\s+)?picture)\b/i.test(t.trim());}
+function isKutsenkoImageRequest(t){return /^(?:пожалуйста[,\s]*)?(?:нарисуй|нарисовать|создай\s+(?:картинку|изображение|фото|рисунок)|сгенерируй\s+(?:картинку|изображение|фото|рисунок)|сделай\s+(?:картинку|изображение|рисунок)|generate\s+(?:an?\s+)?image|draw\s+(?:an?\s+)?picture)(?=$|[\s,.:;!?—-])/i.test(t.trim());}
 async function requestGeneratedImage(chat){
  if(sending)return;
  const last=[...chat.messages].reverse().find(m=>m.role==='user');
