@@ -365,7 +365,7 @@ function render(){if(data.active>=data.chats.length)data.active=0;$('tabs').repl
    const article=document.createElement('div');article.style.cssText='padding:12px 0;border-top:1px solid rgba(143,192,220,.22)';
    const heading=document.createElement('div');heading.style.cssText='font-weight:600;overflow-wrap:anywhere;margin-bottom:6px';heading.textContent=(i+1)+'. '+item.title;
    const date=document.createElement('div');date.style.cssText='font-size:.83em;opacity:.75;margin-bottom:8px';date.textContent=item.published||'Дата не указана';
-   const link=document.createElement('a');link.href=item.url;link.target='_blank';link.rel='noopener noreferrer';link.textContent='🔗 Читать новость';link.style.cssText='display:inline-block;color:#82d9ff;text-decoration:underline;font-weight:600;padding:5px 0';
+   const link=document.createElement('a');link.href=item.url;link.target='_blank';link.rel='noopener noreferrer';link.textContent=m.text?.startsWith('🔎')?'🔗 Открыть источник':'🔗 Читать новость';link.style.cssText='display:inline-block;color:#82d9ff;text-decoration:underline;font-weight:600;padding:5px 0';
    article.append(heading,date,link);newsWrap.append(article);
   });
   d.append(newsWrap);
@@ -409,6 +409,29 @@ async function requestGeneratedImage(chat){
  }catch(e){reply.text='Не удалось создать изображение: '+e.message}
  finally{sending=false;$('form').querySelector('button[type="submit"]').disabled=false;save();render()}
 }
+const KUTSENKO_RESEARCH_URL=API_URL.replace(/\/chat$/, '/research');
+function kutsenkoResearchQuery(t){
+ const s=String(t||'').trim().replace(/[.!?]+$/,'');
+ let m=s.match(/^(?:найди|поищи|покажи)\s+(?:мне\s+)?(?:научные\s+(?:статьи|публикации)|исследования)\s*(?:о|об|по|про|на тему)?\s*(.*)$/i);
+ if(m)return {kind:'papers',query:m[1].trim()||'astronomy'};
+ m=s.match(/^(?:найди|поищи|покажи)\s+(?:мне\s+)?(?:в интернете\s+)?(?:информацию|сведения|материалы|статьи|источники)\s+(?:о|об|про|по|на тему)\s+(.+)$/i);
+ if(m)return {kind:'encyclopedia',query:m[1].trim()};
+ m=s.match(/^(?:найди|поищи)\s+(?:мне\s+)?(?:в интернете|в сети)\s+(?:о|об|про)?\s*(.+)$/i);
+ if(m)return {kind:'encyclopedia',query:m[1].trim()};
+ return null;
+}
+async function requestKutsenkoResearch(chat,params){
+ if(sending)return;
+ const reply={role:'assistant',text:'Ищу источники…'};chat.messages.push(reply);
+ sending=true;$('form').querySelector('button[type="submit"]').disabled=true;render();
+ try{
+  const res=await fetch(KUTSENKO_RESEARCH_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(params)});
+  const data=await res.json();if(!res.ok)throw Error(data.error||'Ошибка '+res.status);
+  reply.newsItems=(data.items||[]).filter(item=>item&&/^https:\/\//i.test(String(item.url||''))).slice(0,6).map(item=>({title:String(item.title||'').slice(0,250),published:String(item.published||'').slice(0,80),url:String(item.url||'').slice(0,1200)}));
+  reply.text='🔎 Найденные источники по запросу «'+params.query+'»\n\nИсточник: '+(data.source||'открытый каталог')+'. Это ссылки на справочные материалы, а не проверка содержания сайтов.';
+ }catch(e){reply.text='Не удалось найти материалы: '+e.message}
+ finally{sending=false;$('form').querySelector('button[type="submit"]').disabled=false;save();render()}
+}
 const KUTSENKO_NEWS_URL=API_URL.replace(/\/chat$/, '/news');
 function kutsenkoNewsQuery(t){
  const s=String(t||'').trim().replace(/[.!?]+$/,'');
@@ -433,6 +456,8 @@ async function requestKutsenkoNews(chat,query){
  finally{sending=false;$('form').querySelector('button[type="submit"]').disabled=false;save();render();}
 }
 async function requestAnswer(chat){
+ const researchQuery=kutsenkoResearchQuery([...chat.messages].reverse().find(m=>m.role==='user')?.text||'');
+ if(researchQuery!==null)return requestKutsenkoResearch(chat,researchQuery);
  const newsQuery=kutsenkoNewsQuery([...chat.messages].reverse().find(m=>m.role==='user')?.text||'');
  if(newsQuery!==null)return requestKutsenkoNews(chat,newsQuery);
  if(isKutsenkoImageRequest([...chat.messages].reverse().find(m=>m.role==='user')?.text||''))return requestGeneratedImage(chat);
