@@ -398,9 +398,14 @@ async function requestGeneratedImage(chat){
 }
 const KUTSENKO_NEWS_URL=API_URL.replace(/\/chat$/, '/news');
 function kutsenkoNewsQuery(t){
- const s=String(t||'').trim();
- const match=s.match(/^(?:пожалуйста[,\s]*)?(?:найди\s+(?:мне\s+)?(?:в\s+интернете\s+)?новости|поищи\s+новости|поиск\s+новостей|новости\s+по\s+теме)\s*(?:о|об|про|по|на\s+тему)?\s*[:—-]?\s*(.*)$/i);
- return match ? (match[1].trim()||'Казахстан') : null;
+ const s=String(t||'').trim().replace(/[.!?]+$/,'');
+ const patterns=[
+  /^(?:пожалуйста[,\s]*)?(?:найди|поищи|покажи|расскажи|дай)\s+(?:мне\s+)?(?:(?:самые\s+)?(?:последние|свежие|актуальные|главные|новые)\s+)?новости(?:\s+(?:о|об|про|по|на\s+тему))?\s*(.*)$/i,
+  /^(?:пожалуйста[,\s]*)?(?:новости|последние\s+новости|свежие\s+новости)(?:\s+(?:о|об|про|по|на\s+тему))?\s*(.*)$/i,
+  /^(?:пожалуйста[,\s]*)?(?:найди|поищи|покажи)\s+(?:мне\s+)?(?:в\s+интернете\s+)?(?:новости|поиск\s+новостей)(?:\s+(?:о|об|про|по|на\s+тему))?\s*(.*)$/i
+ ];
+ for(const re of patterns){const m=s.match(re);if(m)return (m[1]||'').trim()||'Казахстан';}
+ return null;
 }
 async function requestKutsenkoNews(chat,query){
  if(sending)return;
@@ -409,7 +414,7 @@ async function requestKutsenkoNews(chat,query){
  try{
   const res=await fetch(KUTSENKO_NEWS_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({query})});
   const data=await res.json();if(!res.ok)throw Error(data.error||'Ошибка '+res.status);
-  reply.text='📰 Новости по запросу «'+query+'»\n\n'+data.items.map((item,i)=>(i+1)+'. '+item.title+'\n'+item.published+'\n'+item.url).join('\n\n')+'\n\nИсточник: Google News RSS. Это заголовки и ссылки, а не проверенный пересказ статей.';
+  reply.text='📰 Новости по запросу «'+query+'»\n\n'+data.items.map((item,i)=>(i+1)+'. '+item.title+'\n'+item.published+'\n'+item.url).join('\n\n')+'\n\nИсточник: '+(data.source||'RSS')+'. Это заголовки и ссылки, а не проверенный пересказ статей.';
  }catch(e){reply.text='Не удалось найти новости: '+e.message;}
  finally{sending=false;$('form').querySelector('button[type="submit"]').disabled=false;save();render();}
 }
