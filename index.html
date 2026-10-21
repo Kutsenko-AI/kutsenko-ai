@@ -358,6 +358,19 @@ function markdownHTML(src){
 }
 function render(){if(data.active>=data.chats.length)data.active=0;$('tabs').replaceChildren();data.chats.forEach((c,i)=>{let b=document.createElement('button');b.className='tab'+(i===data.active?' active':'');b.textContent=c.title;b.onclick=()=>{data.active=i;save();render()};$('tabs').append(b)});$('messages').replaceChildren();document.body.classList.toggle('welcome',current().messages.length===0||(current().messages.length===1&&current().messages[0].role==='assistant'&&/Привет|Новый диалог/.test(current().messages[0].text)));if(document.body.classList.contains('welcome')){const w=document.createElement('section');w.className='welcome-screen';w.innerHTML='<div class="cosmic-scene" role="img" aria-label="Светящаяся голубая и фиолетовая космическая сфера"><span class="cosmic-orbit"></span><span class="cosmic-orbit second"></span><span class="cosmic-orb"></span><span class="cosmic-star a"></span><span class="cosmic-star b"></span><span class="cosmic-star c"></span><span class="cosmic-star d"></span></div><h2>Твой интеллект. <span>Твоя вселенная.</span></h2><p>Открой вселенную возможностей вместе с KUTSENKO AI.</p><div class="suggestions"><button class="suggestion" data-q="Объясни квантовую физику простыми словами"><b>⚛ НАУКА</b><span>Объясни квантовую физику</span></button><button class="suggestion" data-q="Помоги придумать идею для нового проекта"><b>✦ ИДЕИ</b><span>Придумать новый проект</span></button><button class="suggestion" data-q="Научи меня программировать на Python с нуля"><b>⌘ КОД</b><span>Изучать Python с нуля</span></button><button class="suggestion" data-q="Расскажи необычный факт о космосе"><b>☄ КОСМОС</b><span>Удивительные факты о космосе</span></button></div>';w.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{$('prompt').value=b.dataset.q;$('prompt').focus()});$('messages').append(w)}current().messages.forEach(m=>{let d=document.createElement('div');d.className='msg '+m.role;if(m.role==='assistant'){
  d.innerHTML=m.text==='Думаю…'?'<div class="thinking"><i></i><i></i><i></i><span>Готовлю ответ…</span></div>':markdownHTML(m.text);
+ if(Array.isArray(m.newsItems)&&m.newsItems.length){
+  const newsWrap=document.createElement('div');newsWrap.className='kutsenko-news-results';
+  m.newsItems.forEach((item,i)=>{
+   if(!/^https:\/\//i.test(item.url||''))return;
+   const article=document.createElement('div');article.style.cssText='padding:12px 0;border-top:1px solid rgba(143,192,220,.22)';
+   const heading=document.createElement('div');heading.style.cssText='font-weight:600;overflow-wrap:anywhere;margin-bottom:6px';heading.textContent=(i+1)+'. '+item.title;
+   const date=document.createElement('div');date.style.cssText='font-size:.83em;opacity:.75;margin-bottom:8px';date.textContent=item.published||'Дата не указана';
+   const link=document.createElement('a');link.href=item.url;link.target='_blank';link.rel='noopener noreferrer';link.textContent='🔗 Читать новость';link.style.cssText='display:inline-block;color:#82d9ff;text-decoration:underline;font-weight:600;padding:5px 0';
+   article.append(heading,date,link);newsWrap.append(article);
+  });
+  d.append(newsWrap);
+ }
+
  if(m.generatedImageId&&window.kutsenkoGeneratedImages?.has(m.generatedImageId)){const img=document.createElement('img');img.src=window.kutsenkoGeneratedImages.get(m.generatedImageId);img.alt='Изображение KUTSENKO AI';img.style.cssText='display:block;width:100%;max-width:440px;height:auto;border-radius:14px;margin:10px 0';d.append(img);const link=document.createElement('a');link.href=img.src;link.download='kutsenko-ai-image.png';link.textContent='⬇ Сохранить изображение';link.style.cssText='display:inline-block;margin:6px 0;color:#a8b9ff;text-decoration:underline';d.append(link);}
 
  if(m.text!=='Думаю…'){
@@ -414,7 +427,8 @@ async function requestKutsenkoNews(chat,query){
  try{
   const res=await fetch(KUTSENKO_NEWS_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({query})});
   const data=await res.json();if(!res.ok)throw Error(data.error||'Ошибка '+res.status);
-  reply.text='📰 Новости по запросу «'+query+'»\n\n'+data.items.map((item,i)=>(i+1)+'. '+item.title+'\n'+item.published+'\n'+item.url).join('\n\n')+'\n\nИсточник: '+(data.source||'RSS')+'. Это заголовки и ссылки, а не проверенный пересказ статей.';
+  reply.newsItems=data.items.filter(item=>item&&/^https:\/\//i.test(String(item.url||''))).slice(0,6).map(item=>({title:String(item.title||'').slice(0,250),published:String(item.published||'').slice(0,80),url:String(item.url||'').slice(0,1200)}));
+  reply.text='📰 Новости по запросу «'+query+'»\n\nИсточник: '+(data.source||'RSS')+'. Заголовки из RSS; содержание статей не проверялось.';
  }catch(e){reply.text='Не удалось найти новости: '+e.message;}
  finally{sending=false;$('form').querySelector('button[type="submit"]').disabled=false;save();render();}
 }
