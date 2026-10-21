@@ -396,7 +396,26 @@ async function requestGeneratedImage(chat){
  }catch(e){reply.text='Не удалось создать изображение: '+e.message}
  finally{sending=false;$('form').querySelector('button[type="submit"]').disabled=false;save();render()}
 }
+const KUTSENKO_NEWS_URL=API_URL.replace(/\/chat$/, '/news');
+function kutsenkoNewsQuery(t){
+ const s=String(t||'').trim();
+ const match=s.match(/^(?:пожалуйста[,\s]*)?(?:найди\s+(?:мне\s+)?(?:в\s+интернете\s+)?новости|поищи\s+новости|поиск\s+новостей|новости\s+по\s+теме)\s*(?:о|об|про|по|на\s+тему)?\s*[:—-]?\s*(.*)$/i);
+ return match ? (match[1].trim()||'Казахстан') : null;
+}
+async function requestKutsenkoNews(chat,query){
+ if(sending)return;
+ const reply={role:'assistant',text:'Ищу новости…'};chat.messages.push(reply);
+ sending=true;$('form').querySelector('button[type="submit"]').disabled=true;render();
+ try{
+  const res=await fetch(KUTSENKO_NEWS_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({query})});
+  const data=await res.json();if(!res.ok)throw Error(data.error||'Ошибка '+res.status);
+  reply.text='📰 Новости по запросу «'+query+'»\n\n'+data.items.map((item,i)=>(i+1)+'. '+item.title+'\n'+item.published+'\n'+item.url).join('\n\n')+'\n\nИсточник: Google News RSS. Это заголовки и ссылки, а не проверенный пересказ статей.';
+ }catch(e){reply.text='Не удалось найти новости: '+e.message;}
+ finally{sending=false;$('form').querySelector('button[type="submit"]').disabled=false;save();render();}
+}
 async function requestAnswer(chat){
+ const newsQuery=kutsenkoNewsQuery([...chat.messages].reverse().find(m=>m.role==='user')?.text||'');
+ if(newsQuery!==null)return requestKutsenkoNews(chat,newsQuery);
  if(isKutsenkoImageRequest([...chat.messages].reverse().find(m=>m.role==='user')?.text||''))return requestGeneratedImage(chat);
  if(sending)return;
  const reply={role:'assistant',text:'Думаю…'};chat.messages.push(reply);
